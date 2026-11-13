@@ -34,9 +34,10 @@
         "backgroundColor": "#3b82f6",
         "foregroundImage": "./assets/icon.png"
       },
-      "permissions": []
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "SCHEDULE_EXACT_ALARM", "USE_EXACT_ALARM"]
     },
     "plugins": [
+      "expo-notifications",
       [
         "react-native-google-mobile-ads",
         {

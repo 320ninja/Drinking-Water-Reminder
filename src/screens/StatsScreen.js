@@ -5,18 +5,28 @@ import { useFocusEffect } from '@react-navigation/native';
 import { BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import BannerAdBar from '../components/BannerAdBar';
-import { getLast7Days, getGoal } from '../services/DataService';
+import { getLast7Days, getGoal, getStreak } from '../services/DataService';
 
 const SCREEN_W = Dimensions.get('window').width;
+
+const HEALTH_FACTS = [
+  '🫁 Water makes up 60% of your body weight.',
+  '🧠 Dehydration shrinks your brain volume temporarily.',
+  '💉 Blood is 90% water — hydration directly affects circulation.',
+  '🦴 Joints need water as natural lubrication.',
+  '🌡️ Sweating is your body\'s built-in cooling system — stay fueled.',
+];
 
 export default function StatsScreen() {
   const [days, setDays] = useState([]);
   const [goal, setGoal] = useState(2000);
+  const [streak, setStreak] = useState(0);
 
   const load = useCallback(async () => {
-    const [d, g] = await Promise.all([getLast7Days(), getGoal()]);
+    const [d, g, s] = await Promise.all([getLast7Days(), getGoal(), getStreak()]);
     setDays(d);
     setGoal(g);
+    setStreak(s);
   }, []);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
@@ -25,13 +35,8 @@ export default function StatsScreen() {
   const weekTotal = totals.reduce((a, b) => a + b, 0);
   const avg = days.length ? Math.round(weekTotal / days.length) : 0;
   const best = totals.length ? Math.max(...totals) : 0;
-  const streak = (() => {
-    let s = 0;
-    for (let i = totals.length - 1; i >= 0; i--) {
-      if (totals[i] >= goal) s++; else break;
-    }
-    return s;
-  })();
+  const goalDays = totals.filter(t => t >= goal).length;
+  const pct = goal > 0 ? Math.min(avg / goal, 1) : 0;
 
   const chartData = {
     labels: days.map(d => d.label),
@@ -40,15 +45,25 @@ export default function StatsScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>📊 Weekly Stats</Text>
 
-        {/* Streak */}
-        <View style={styles.streakCard}>
-          <Text style={styles.streakEmoji}>🔥</Text>
-          <View>
-            <Text style={styles.streakNum}>{streak} day streak</Text>
-            <Text style={styles.streakSub}>days you met your goal</Text>
+        {/* Streak + goal days */}
+        <View style={styles.heroRow}>
+          <View style={[styles.heroCard, { backgroundColor: '#fff7ed' }]}>
+            <Text style={styles.heroEmoji}>🔥</Text>
+            <Text style={styles.heroNum}>{streak}</Text>
+            <Text style={styles.heroLabel}>Day streak</Text>
+          </View>
+          <View style={[styles.heroCard, { backgroundColor: '#f0fdf4' }]}>
+            <Text style={styles.heroEmoji}>🎯</Text>
+            <Text style={styles.heroNum}>{goalDays}/7</Text>
+            <Text style={styles.heroLabel}>Goal days</Text>
+          </View>
+          <View style={[styles.heroCard, { backgroundColor: '#eff6ff' }]}>
+            <Text style={styles.heroEmoji}>📈</Text>
+            <Text style={styles.heroNum}>{Math.round(pct * 100)}%</Text>
+            <Text style={styles.heroLabel}>Avg vs goal</Text>
           </View>
         </View>
 
@@ -89,7 +104,21 @@ export default function StatsScreen() {
         </View>
 
         {/* Goal reference */}
-        <Text style={styles.goalLine}>Daily goal: {goal} ml</Text>
+        <View style={styles.goalBar}>
+          <Text style={styles.goalBarLabel}>Daily goal: {goal} ml</Text>
+          <View style={styles.goalBarTrack}>
+            <View style={[styles.goalBarFill, { width: `${Math.min(pct, 1) * 100}%` }]} />
+          </View>
+          <Text style={styles.goalBarSub}>7-day avg is {pct >= 1 ? 'at or above' : 'below'} goal</Text>
+        </View>
+
+        {/* Science facts */}
+        <Text style={styles.sectionTitle}>Did you know?</Text>
+        {HEALTH_FACTS.map((f, i) => (
+          <View key={i} style={styles.factRow}>
+            <Text style={styles.factText}>{f}</Text>
+          </View>
+        ))}
       </ScrollView>
       <BannerAdBar />
     </SafeAreaView>
@@ -98,21 +127,23 @@ export default function StatsScreen() {
 
 const styles = StyleSheet.create({
   safe:         { flex: 1, backgroundColor: '#f0f8ff' },
-  scroll:       { padding: 16 },
-  title:        { fontSize: 22, fontWeight: '700', color: '#1e40af', marginBottom: 16 },
-  streakCard:   {
-    backgroundColor: '#fff7ed', borderRadius: 16, padding: 16,
-    flexDirection: 'row', alignItems: 'center', marginBottom: 24, gap: 12,
-  },
-  streakEmoji:  { fontSize: 36 },
-  streakNum:    { fontSize: 20, fontWeight: '700', color: '#c2410c' },
-  streakSub:    { fontSize: 13, color: '#6b7280' },
-  sectionTitle: { fontSize: 15, fontWeight: '600', color: '#6b7280', marginBottom: 10 },
-  cardRow:      { flexDirection: 'row', gap: 10, marginBottom: 16 },
-  card:         {
-    flex: 1, backgroundColor: '#fff', borderRadius: 14, padding: 14, alignItems: 'center',
-  },
+  scroll:       { padding: 16, paddingBottom: 20 },
+  title:        { fontSize: 22, fontWeight: '800', color: '#1e40af', marginBottom: 20 },
+  heroRow:      { flexDirection: 'row', gap: 10, marginBottom: 24 },
+  heroCard:     { flex: 1, borderRadius: 16, padding: 14, alignItems: 'center' },
+  heroEmoji:    { fontSize: 24, marginBottom: 4 },
+  heroNum:      { fontSize: 20, fontWeight: '800', color: '#1e40af' },
+  heroLabel:    { fontSize: 11, color: '#6b7280', marginTop: 2 },
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: '#374151', marginBottom: 12 },
+  cardRow:      { flexDirection: 'row', gap: 10, marginBottom: 20 },
+  card:         { flex: 1, backgroundColor: '#fff', borderRadius: 14, padding: 14, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
   cardVal:      { fontSize: 18, fontWeight: '700', color: '#1e40af' },
   cardLabel:    { fontSize: 12, color: '#6b7280', marginTop: 2 },
-  goalLine:     { textAlign: 'center', color: '#9ca3af', fontSize: 13 },
+  goalBar:      { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 24 },
+  goalBarLabel: { fontWeight: '700', color: '#1e40af', marginBottom: 10 },
+  goalBarTrack: { height: 10, backgroundColor: '#e5e7eb', borderRadius: 5, marginBottom: 8 },
+  goalBarFill:  { height: 10, backgroundColor: '#3b82f6', borderRadius: 5 },
+  goalBarSub:   { fontSize: 12, color: '#6b7280' },
+  factRow:      { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 8 },
+  factText:     { fontSize: 13, color: '#374151', lineHeight: 20 },
 });
