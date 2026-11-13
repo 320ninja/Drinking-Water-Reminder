@@ -1,22 +1,45 @@
 {
   "expo": {
-    "name": "water_reminder",
-    "slug": "water_reminder",
+    "name": "Drink Water Reminder",
+    "slug": "drink-water-reminder",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "ios": {
-      "supportsTablet": true
+    "splash": {
+      "backgroundColor": "#3b82f6"
     },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.yourname.waterreminder",
+      "infoPlist": {
+        "GADApplicationIdentifier": "ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY",
+        "NSUserTrackingUsageDescription": "This helps show you relevant ads and keeps the app free.",
+        "SKAdNetworkItems": [
+          { "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork" },
+          { "SKAdNetworkIdentifier": "4fzdc2evr5.skadnetwork" },
+          { "SKAdNetworkIdentifier": "2fnua5tdw4.skadnetwork" }
+        ]
       }
     },
+    "android": {
+      "package": "com.yourname.waterreminder",
+      "adaptiveIcon": {
+        "backgroundColor": "#3b82f6",
+        "foregroundImage": "./assets/icon.png"
+      },
+      "permissions": []
+    },
+    "plugins": [
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY",
+          "iosAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY",
+          "userTrackingUsageDescription": "This helps show you relevant ads."
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     }
