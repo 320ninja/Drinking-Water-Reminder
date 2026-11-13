@@ -13,12 +13,18 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.yourname.waterreminder",
       "infoPlist": {
-        "GADApplicationIdentifier": "ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY",
+        "GADApplicationIdentifier": "ca-app-pub-3940256099942544~1458002511",
         "NSUserTrackingUsageDescription": "This helps show you relevant ads and keeps the app free.",
         "SKAdNetworkItems": [
-          { "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork" },
-          { "SKAdNetworkIdentifier": "4fzdc2evr5.skadnetwork" },
-          { "SKAdNetworkIdentifier": "2fnua5tdw4.skadnetwork" }
+          {
+            "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "4fzdc2evr5.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "2fnua5tdw4.skadnetwork"
+          }
         ]
       }
     },
@@ -34,8 +40,8 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY",
-          "iosAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY",
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
           "userTrackingUsageDescription": "This helps show you relevant ads."
         }
       ]
