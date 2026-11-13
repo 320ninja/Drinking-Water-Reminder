@@ -22,7 +22,7 @@ export default function SettingsScreen() {
     setWeightState(w);
   }, []);
 
-  useFocusEffect(load);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const openModal = (type) => {
     setInputVal(type === 'goal' ? String(goal) : String(weight));
