@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
+const BarChart = Platform.OS !== 'web' ? require('react-native-chart-kit').BarChart : null;
 import BannerAdBar from '../components/BannerAdBar';
 import { getLast7Days, getGoal, getStreak } from '../services/DataService';
 
@@ -69,23 +69,35 @@ export default function StatsScreen() {
 
         {/* Bar chart */}
         <Text style={styles.sectionTitle}>Last 7 Days</Text>
-        <BarChart
-          data={chartData}
-          width={SCREEN_W - 32}
-          height={200}
-          yAxisSuffix="ml"
-          chartConfig={{
-            backgroundGradientFrom: '#eff6ff',
-            backgroundGradientTo: '#eff6ff',
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-            labelColor: () => '#6b7280',
-            barPercentage: 0.6,
-          }}
-          style={{ borderRadius: 14, marginBottom: 24 }}
-          showValuesOnTopOfBars
-          fromZero
-        />
+        {BarChart ? (
+          <BarChart
+            data={chartData}
+            width={SCREEN_W - 32}
+            height={200}
+            yAxisSuffix="ml"
+            chartConfig={{
+              backgroundGradientFrom: '#eff6ff',
+              backgroundGradientTo: '#eff6ff',
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
+              labelColor: () => '#6b7280',
+              barPercentage: 0.6,
+            }}
+            style={{ borderRadius: 14, marginBottom: 24 }}
+            showValuesOnTopOfBars
+            fromZero
+          />
+        ) : (
+          <View style={styles.webChartPlaceholder}>
+            {days.map((d, i) => (
+              <View key={i} style={styles.webBar}>
+                <Text style={styles.webBarVal}>{d.total}ml</Text>
+                <View style={[styles.webBarFill, { height: Math.max(4, (d.total / (goal || 2000)) * 80) }]} />
+                <Text style={styles.webBarLabel}>{d.label}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* Summary cards */}
         <View style={styles.cardRow}>
@@ -145,5 +157,10 @@ const styles = StyleSheet.create({
   goalBarFill:  { height: 10, backgroundColor: '#3b82f6', borderRadius: 5 },
   goalBarSub:   { fontSize: 12, color: '#6b7280' },
   factRow:      { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 8 },
-  factText:     { fontSize: 13, color: '#374151', lineHeight: 20 },
+  factText:            { fontSize: 13, color: '#374151', lineHeight: 20 },
+  webChartPlaceholder: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-around', height: 120, backgroundColor: '#eff6ff', borderRadius: 14, paddingHorizontal: 8, paddingTop: 8, marginBottom: 24 },
+  webBar:              { alignItems: 'center', flex: 1 },
+  webBarVal:           { fontSize: 9, color: '#6b7280', marginBottom: 2 },
+  webBarFill:          { width: 20, backgroundColor: '#3b82f6', borderRadius: 4 },
+  webBarLabel:         { fontSize: 10, color: '#6b7280', marginTop: 4 },
 });
