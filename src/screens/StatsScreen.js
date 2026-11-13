@@ -18,7 +18,7 @@ export default function StatsScreen() {
     setGoal(g);
   }, []);
 
-  useFocusEffect(load);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const totals = days.map(d => d.total);
   const weekTotal = totals.reduce((a, b) => a + b, 0);

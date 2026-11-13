@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }) {
     setTodayMl(e.reduce((s, x) => s + x.amountMl, 0));
   }, []);
 
-  useFocusEffect(reload);
+  useFocusEffect(useCallback(() => { reload(); }, [reload]));
 
   const quickAdd = async (ml) => {
     await addEntry(ml);
