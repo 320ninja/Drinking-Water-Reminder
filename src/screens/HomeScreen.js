@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import {
   View, Text, TouchableOpacity, FlatList, StyleSheet,
-  SafeAreaView, Alert, ScrollView,
+  Alert, ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import BannerAdBar from '../components/BannerAdBar';
 import { onActionCompleted } from '../services/AdService';
